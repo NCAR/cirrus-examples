@@ -1,0 +1,21 @@
+replicaCount: 1
+
+webapp:
+  name: #APP_NAME
+  group: #APP_NAME
+  path: #URL_PATH
+  tls:
+    fqdn: #FQDN
+    secretName: incommon-cert-#HOST
+  container: 
+    image: #IMAGE_NAME
+    port: #CONTAINER_PORT
+    memory: 1G
+    cpu: 2
+db:
+  name: #DATABASE_NAME
+  usernameKey: #USERNAME_SECRET_KEY
+  passwordKey: #PASSWORD_SECRET_KEY
+  secretPath: #SECRET_PATH
+  volume:
+    size: #VOLUME_SIZE_INTEGER
