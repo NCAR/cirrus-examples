@@ -1,4 +1,4 @@
-# volumes-helm
+# nfs-vol-helm
 A Helm Chart template for deploying applications with added volumes from an NFS server
 
 ```{note}

@@ -18,4 +18,5 @@ db:
   passwordKey: #PASSWORD_SECRET_KEY
   secretPath: #SECRET_PATH
   volume:
-    size: #VOLUME_SIZE_INTEGER
+    name: #VOLUME_NAME
+    size: #VOLUME_SIZE
