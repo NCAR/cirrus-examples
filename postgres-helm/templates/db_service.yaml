@@ -6,7 +6,7 @@ metadata:
   labels:
     group: {{ .Values.webapp.group }}
 spec:
-  type: CLusterIP
+  type: ClusterIP
   ports:
   - port: 5432
   selector:
