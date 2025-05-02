@@ -8,9 +8,14 @@ webapp:
     fqdn: #FQDN
     secretName: incommon-cert-#APP_NAME
   volume:
-    name: #VOLUME_NAME
-    size: #VOL_SIZE
-    mountPath: #MOUNT_PATH
+    rdb:
+      name: #VOLUME_NAME
+      size: #VOL_SIZE
+      mountPath: #MOUNT_PATH
+    fs:
+      name: #VOLUME_NAME
+      size: #VOL_SIZE
+      mountPath: #MOUNT_PATH
   container: 
     image: #IMAGE_NAME
     port: #CONTAINER_PORT

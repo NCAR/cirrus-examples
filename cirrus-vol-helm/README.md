@@ -1,6 +1,8 @@
 # cirrus-vol-helm
 A Helm Chart template for deploying applications with added volumes from CIRRUS storage. The provisioned volume persists when new container images are swapped out so new data being written can be saved. They can be setup so multiple containers can access them and share data.
 
+CIRRUS utilizes [Ceph](https://docs.ceph.com/en/reef/) to create storage clusters and currently has 2 storage classes, Ceph RDB & Ceph FS, on each Kubernetes cluster which can be used to provision PVs. Ceph RDB only allows access to a single container, ReadWriteOnce, while Ceph FS allows multiple containers, ReadWriteMany, to access the underlying storage. 
+
 ```{note}
 Information required to create a Helm chart for your web application:
 1. A Name for your application, this is not the URL that will be deployed but the name of the k8s objects created

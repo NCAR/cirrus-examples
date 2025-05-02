@@ -17,9 +17,12 @@ spec:
         app: {{ .Values.webapp.name }}
     spec:
       volumes:
-        - name: {{ .Values.webapp.volume.name }}
+        - name: {{ .Values.webapp.volume.rdb.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.webapp.volume.name }}
+            claimName: {{ .Values.webapp.volume.rdb.name }}
+        - name: {{ .Values.webapp.volume.fs.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.webapp.volume.fs.name }}
       containers:
       - name: {{ .Values.webapp.name }}
         image: {{ .Values.webapp.container.image }}
@@ -30,5 +33,7 @@ spec:
         ports:
         - containerPort: {{ .Values.webapp.container.port }}
         volumeMounts:
-        - mountPath: {{ .Values.webapp.volume.mountPath }}
-          name: {{ .Values.webapp.volume.name }}
+        - mountPath: {{ .Values.webapp.volume.rdb.mountPath }}
+          name: {{ .Values.webapp.volume.rdb.name }}
+        - mountPath: {{ .Values.webapp.volume.fs.mountPath }}
+          name: {{ .Values.webapp.volume.fs.name }}
