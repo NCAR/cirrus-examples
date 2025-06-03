@@ -1,22 +1,13 @@
-replicaCount: 1
-
-webapp:
-  name: #APP_NAME
-  group: #APP_NAME
-  path: #URL_PATH
-  tls:
-    fqdn: #FQDN
-    secretName: incommon-cert-#HOST
-  container: 
-    image: #IMAGE_NAME
-    port: #CONTAINER_PORT
-    memory: 1G
-    cpu: 2
 db:
   name: #DATABASE_NAME
-  usernameKey: #USERNAME_SECRET_KEY
-  passwordKey: #PASSWORD_SECRET_KEY
-  secretPath: #SECRET_PATH
-  volume:
-    name: #VOLUME_NAME
-    size: #VOLUME_SIZE
+  group: #DATABASE_APP_GROUP
+  instances: #DATABASE_CLUSTER_MEMBERS
+  size: #DATABASE_SIZE
+  superUser:
+    usernameKey: #SU_USERNAME_SECRET_KEY
+    passwordKey: #SU_PASSWORD_SECRET_KEY
+    secretPath: #SU_SECRET_PATH
+  appUser:
+    usernameKey: #APP_USERNAME_SECRET_KEY
+    passwordKey: #APP_PASSWORD_SECRET_KEY
+    secretPath: #APP_USER_SECRET_PATH
