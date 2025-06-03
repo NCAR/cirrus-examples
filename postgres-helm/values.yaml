@@ -1,13 +1,15 @@
 db:
-  name: #DATABASE_NAME
-  group: #DATABASE_APP_GROUP
+  name: #DATABASE_CLUSTER_NAME
+  group: #DATABASE_CLUSTER_GROUP
   instances: #DATABASE_CLUSTER_MEMBERS
   size: #DATABASE_SIZE
   superUser:
     usernameKey: #SU_USERNAME_SECRET_KEY
     passwordKey: #SU_PASSWORD_SECRET_KEY
     secretPath: #SU_SECRET_PATH
-  appUser:
+  app:
+    name: #APP_DB_NAME
+    owner: #APP_OWNER_USERNAME
     usernameKey: #APP_USERNAME_SECRET_KEY
     passwordKey: #APP_PASSWORD_SECRET_KEY
     secretPath: #APP_USER_SECRET_PATH

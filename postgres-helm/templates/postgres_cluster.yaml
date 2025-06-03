@@ -21,7 +21,7 @@ spec:
   # Create a standard user from user_external_secret
   bootstrap:
     initdb:
-      database: app
-      owner: app
+      database: {{ .Values.db.app.name }}
+      owner: {{ .Values.db.app.owner }}
       secret:
         name: "{{ .Values.db.name }}-app-user"
