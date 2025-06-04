@@ -3,7 +3,7 @@ A chart for deploying a PostgreSQL database cluster to the CISL cloud with Helm.
 
 ```{note}
 Information required to create a Helm chart for your web application:
-1. A Name for the database.
+1. A Name for the database. This will be used as a hostname to connect to via <db_name>.k8s.ucar.edu
 2. The number of PostgreSQL servers to run in the database cluster
 3. The size of the volume to mount to the database and a unique name for the volume. 
 4. Secret information to access the database. This should be stored in bao.k8s.ucar.edu. An example of what a path would look like is, <email>/database01. Under that path use the keys postgresuser and postgrespass to store the username and password for the DB securely.   

@@ -1,14 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.db.name }}-external
+  name: {{ .Values.db.name }}-service
   namespace: {{ .Release.Namespace }}
+  labels:
+    cirrus/lb: internal
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "{{ .Values.db.name }}.k8s.ucar.edu"
+    external-dns.alpha.kubernetes.io/ttl: "300"
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     cnpg.io/cluster: {{ .Values.db.name }}
     cnpg.io/instanceRole: primary
   ports:
   - port: 5432
     targetPort: 5432
-    nodePort: {{ .Values.db.nodePort | default 30432 }}
+    protocol: TCP

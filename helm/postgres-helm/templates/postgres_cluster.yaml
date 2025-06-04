@@ -14,7 +14,7 @@ spec:
   # Enable superuser access
   enableSuperuserAccess: true
   
-  # Configure postgres superuser from su_external_secrets
+  # Configure postgres superuser from su_external_secret
   superuserSecret:
     name: "{{ .Values.db.name }}-superuser"
 
