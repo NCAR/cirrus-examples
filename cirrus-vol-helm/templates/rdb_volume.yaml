@@ -6,7 +6,7 @@ metadata:
 spec:
     accessModes:
         - ReadWriteOnce
-    storageClassName: nwceph-kubepv
+    storageClassName: ceph-kubepv
     resources:
         requests:
             storage: {{ .Values.webapp.volume.rdb.size | default "1Gi" }} 
