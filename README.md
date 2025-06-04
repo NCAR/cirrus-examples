@@ -1,5 +1,5 @@
-# cirrus-helm-examples
-A repository that contains example Helm charts that can be used as templates to deploy custom applications to CIRRUS.
+# cirrus-examples
+A repository that contains example Helm charts and kustomizations that can be used as templates to deploy custom applications to CIRRUS.
 
 For more information on CIRRUS, please see [CIRRUS, NSF NCAR Cloud Infrastructure for Remote Research, Universities, and Scientists](https://ncar-hpc-docs.readthedocs.io/en/latest/compute-systems/cirrus/). 
 
