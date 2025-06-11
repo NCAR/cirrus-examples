@@ -10,7 +10,12 @@ spec:
   instances: {{ .Values.db.instances }}
   storage:
     size: {{ .Values.db.size }}
-      
+
+  # Allow outside hosts to connect to the database
+  postgresql:
+    pg_hba:
+      - "host all all 0.0.0.0/0 md5"
+
   # Enable superuser access
   enableSuperuserAccess: true
   

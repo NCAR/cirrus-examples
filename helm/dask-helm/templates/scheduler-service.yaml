@@ -10,9 +10,11 @@ spec:
   ports:
     - name: {{ .Values.scheduler.name }}
       port: {{ .Values.scheduler.container.workerPort }}
+      targetPort: {{ .Values.scheduler.container.workerPort }}
       protocol: TCP
     - name: {{ .Values.scheduler.name }}-webui
       port: {{ .Values.scheduler.container.dashboardPort }}
+      targetPort: {{ .Values.scheduler.container.dashboardPort }}
       protocol: TCP
   selector:
     app: {{ .Values.scheduler.name }}
