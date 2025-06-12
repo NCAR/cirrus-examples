@@ -1,0 +1,30 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ .Values.db.name }}-selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.db.name }}-server-cert
+spec:
+  secretName: {{ .Values.db.name }}-server-cert
+  usages:
+    - server auth
+  dnsNames:
+    - "{{ .Values.db.name }}.k8s.ucar.edu"
+    - {{ .Values.db.name }}-rw
+    - {{ .Values.db.name }}-rw.{{ .Release.Namespace }}
+    - {{ .Values.db.name }}-rw.{{ .Release.Namespace }}.svc
+    - {{ .Values.db.name }}-r
+    - {{ .Values.db.name }}-r.{{ .Release.Namespace }}
+    - {{ .Values.db.name }}-r.{{ .Release.Namespace }}.svc
+    - {{ .Values.db.name }}-ro
+    - {{ .Values.db.name }}-ro.{{ .Release.Namespace }}
+    - {{ .Values.db.name }}-ro.{{ .Release.Namespace }}.svc
+  issuerRef:
+    name: {{ .Values.db.name }}-selfsigned-issuer
+    kind: Issuer
+    group: cert-manager.io

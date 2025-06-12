@@ -11,6 +11,11 @@ spec:
   storage:
     size: {{ .Values.db.size }}
 
+  # Add TLS certificates for encrypted communication
+  certificates:
+    serverTLSSecret: {{ .Values.db.name }}-server-cert
+    serverCASecret: {{ .Values.db.name }}-server-cert
+
   # Allow outside hosts to connect to the database
   postgresql:
     pg_hba:
