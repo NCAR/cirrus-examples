@@ -4,6 +4,7 @@ db:
   instances: #DATABASE_CLUSTER_MEMBERS
   size: #DATABASE_SIZE
   superUser:
+    usernameKey: #SUPER_USERNAME_SECRET_KEY
     passwordKey: #SU_PASSWORD_SECRET_KEY
     secretPath: #SU_SECRET_PATH
   app:
