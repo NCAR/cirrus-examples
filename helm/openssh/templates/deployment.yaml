@@ -1,0 +1,48 @@
+{{- if .Values.ssh.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.ssh.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.ssh.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.ssh.name }}
+    spec:
+      containers:
+      - name: ssh-server
+        image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        ports:
+        - containerPort: {{ .Values.ssh.image.port }}
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        - name: PASSWORD_ACCESS
+          value: "true"
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.ssh.name }}-secrets
+              key: {{ .Values.ssh.name }}-username
+        - name: USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.ssh.name }}-secrets
+              key: {{ .Values.ssh.name }}-password
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+{{- end }}

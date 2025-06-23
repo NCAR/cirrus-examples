@@ -1,0 +1,12 @@
+ssh:
+  enabled: true
+  name: #SSH_APP_NAME
+  image: 
+    repository: lscr.io/linuxserver/openssh-server
+    tag: latest
+    port: 2222
+  secret:
+    secretStoreName: #SECRET_STORE_NAME
+    path: #BAO_SECRET_PATH
+    usernameKey: #BAO_USERNAME_SECRET_KEY
+    passwordKey: #BAO_PASSWORD_SECRET_KEY
