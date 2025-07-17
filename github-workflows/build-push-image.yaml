@@ -41,13 +41,13 @@ jobs:
       uses: docker/login-action@v3
       with:
         registry: hub.k8s.ucar.edu/project-name
-        username: robot-gha #robot account for your project in cirrus registry
+        username: ${{ secrets.hub_user }} #robot account for your project in cirrus registry
         password: ${{ secrets.hub_password }} #set up in the github CI settings
     - name: Build
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: hub.k8s.ucar.edu/project-name/image-name:${{ env.SHOART_SHA }} #recommend the tag is a variable. Can use multiple tags.
+        tags: hub.k8s.ucar.edu/project-name/image-name:${{ env.SHORT_SHA }} #recommend the tag is a variable. Can use multiple tags.
         file: containers/Dockerfile
         #to utilize better image build caching using hub.k8s.ucar.edu
         cache-from: "type=registry,ref=hub.k8s.ucar.edu/project-name/image-name:cache"
