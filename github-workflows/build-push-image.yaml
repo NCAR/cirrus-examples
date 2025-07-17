@@ -1,0 +1,54 @@
+name: build and push
+
+#on: push #run workflow on any push
+
+# run workflow on pushes to specific branches
+#on:
+#  push:
+#    branches:
+#      - main
+#      - dev
+
+# run workflow on tag pushes
+#on:
+#  push:
+#    tags:
+#      - '[0-9]+.[0-9]+.[0-9]+' #semantic versioning
+
+#workflow dispatch adds a button to run on github and is useful to always have there
+on:
+  workflow_dispatch:
+jobs: 
+  build: 
+    runs-on: gha-runner-actions-test #your runner name here
+    steps: 
+    - name: checkout code
+      uses: actions/checkout@v2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    #This step sets up a varibale to use later in the image tag
+    - name: Get short sha
+      run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+    #This step is necessary in the cirrus system
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        platforms: linux/amd64
+        driver: remote
+        endpoint: tcp://buildkitd.arc-systems.svc:1234
+    # Log in to the cirrus hosted container registry instead of dockerhub
+    - name: registry login
+      uses: docker/login-action@v3
+      with:
+        registry: hub.k8s.ucar.edu/project-name
+        username: robot-gha #robot account for your project in cirrus registry
+        password: ${{ secrets.hub_password }} #set up in the github CI settings
+    - name: Build
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        tags: hub.k8s.ucar.edu/project-name/image-name:${{ env.SHOART_SHA }} #recommend the tag is a variable. Can use multiple tags.
+        file: containers/Dockerfile
+        #to utilize better image build caching using hub.k8s.ucar.edu
+        cache-from: "type=registry,ref=hub.k8s.ucar.edu/project-name/image-name:cache"
+        cache-to: "type=registry,ref=hub.k8s.ucar.edu/project-name/image-name:cache,image-manifest=true,mode=max"
