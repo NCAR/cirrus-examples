@@ -30,4 +30,4 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ .Values.webapp.name }}-esos
-              key: {{ .Values.db.usernameKey }}
+              key: {{ .Values.webapp.secret.secretKey }}
