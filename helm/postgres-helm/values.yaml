@@ -1,15 +1,15 @@
 db:
-  name: #DATABASE_CLUSTER_NAME
-  group: #DATABASE_CLUSTER_GROUP
-  instances: #DATABASE_CLUSTER_MEMBERS
-  size: #DATABASE_SIZE
+  name: my-database                       # Database cluster name, also used as hostname
+  group: my-database                      # Group label for related resources
+  instances: 2                            # Number of PostgreSQL servers in the cluster
+  size: 10Gi                              # Storage size for the database
   superUser:
-    usernameKey: #SUPER_USERNAME_SECRET_KEY
-    passwordKey: #SU_PASSWORD_SECRET_KEY
-    secretPath: #SU_SECRET_PATH
+    enabled: false                         # Enable superuser access to the database
+    usernameKey: username                  # Key in OpenBao for superuser username
+    passwordKey: password                  # Key in OpenBao for superuser password
+    secretPath: my-path/superuser          # Path in OpenBao where superuser credentials are stored
   app:
-    name: #APP_DB_NAME
-    owner: #APP_OWNER_USERNAME
-    usernameKey: #APP_USERNAME_SECRET_KEY
-    passwordKey: #APP_PASSWORD_SECRET_KEY
-    secretPath: #APP_USER_SECRET_PATH
+    name: my-app-db                       # Database name to create during bootstrap
+    usernameKey: username                  # Key in OpenBao for app user username
+    passwordKey: password                  # Key in OpenBao for app user password
+    secretPath: my-path/appuser            # Path in OpenBao where app user credentials are stored

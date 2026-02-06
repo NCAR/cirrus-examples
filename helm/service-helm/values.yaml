@@ -1,0 +1,14 @@
+replicaCount: 2                           # Number of identical pods to run
+
+service:
+  name: my-service                        # Name for k8s objects
+  group: my-service                       # Group label for related resources
+  container:
+    image: my-registry/my-image:tag       # Full image path
+    port: 8080                            # Port your container listens on
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed

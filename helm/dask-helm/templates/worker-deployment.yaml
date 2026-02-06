@@ -19,10 +19,16 @@ spec:
         component: worker
     spec:
       containers:
-      - name: {{ .Values.webapp.name }}-worker
+      - name: {{ .Values.worker.name }}
         image: {{ .Values.scheduler.container.image }}
-        imagePullPolicy: {{ .Values.scheduler.container.imagePullPolicy }}
+        imagePullPolicy: IfNotPresent
         args:
-            - dask-worker
-            - {{ .Values.scheduler.name }}:{{ .Values.scheduler.container.workerPort }}
-    
+          - dask-worker
+          - {{ .Values.scheduler.name }}:{{ .Values.scheduler.container.workerPort }}
+        resources:
+          requests:
+            memory: {{ .Values.worker.container.requests.memory }}
+            cpu: {{ .Values.worker.container.requests.cpu }}
+          limits:
+            memory: {{ .Values.worker.container.limits.memory }}
+            cpu: {{ .Values.worker.container.limits.cpu }}

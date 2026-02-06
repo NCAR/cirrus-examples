@@ -19,13 +19,16 @@ spec:
       containers:
       - name: {{ .Values.scheduler.name }}
         image: {{ .Values.scheduler.container.image }}
-        imagePullPolicy: {{ .Values.scheduler.container.imagePullPolicy }}
+        imagePullPolicy: IfNotPresent
         args:
-            - dask-scheduler
+          - dask-scheduler
         ports:
-          - containerPort: {{ .Values.scheduler.container.workerPort }}
-          - containerPort: {{ .Values.scheduler.container.dashboardPort }}
+        - containerPort: {{ .Values.scheduler.container.workerPort }}
+        - containerPort: {{ .Values.scheduler.container.dashboardPort }}
         resources:
+          requests:
+            memory: {{ .Values.scheduler.container.requests.memory }}
+            cpu: {{ .Values.scheduler.container.requests.cpu }}
           limits:
-            memory: {{ .Values.scheduler.container.memory }}
-            cpu: {{ .Values.scheduler.container.cpu }}
+            memory: {{ .Values.scheduler.container.limits.memory }}
+            cpu: {{ .Values.scheduler.container.limits.cpu }}

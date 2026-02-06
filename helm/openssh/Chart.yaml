@@ -1,6 +1,0 @@
-apiVersion: v2
-name: ssh-demo
-description: An example to create a container with ssh access
-type: application
-version: 0.1.0
-appVersion: "0.1.0"

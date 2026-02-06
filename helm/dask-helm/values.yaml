@@ -1,27 +1,44 @@
 webapp:
-  name: #APP_NAME
-  group: #APP_NAME
-  replicaCount: 1
-  path: #URL_PATH
+  name: my-app                            # Name for web app k8s objects
+  group: my-app                           # Group label for related resources
+  replicaCount: 2                         # Number of web app pods to run
+  path: /                                 # URL path suffix for the web app
   tls:
-    fqdn: #FQDN
-    secretName: incommon-cert-#HOST
-  container: 
-    image: #WEBAPP_IMAGE
-    imagePullPolicy: Always
-    port: #WEBAPP_PORT
-    memory: 1G
-    cpu: 2
+    fqdn: my-app.k8s.ucar.edu            # Must be unique and end in .k8s.ucar.edu
+    secretName: incommon-cert-my-app      # Unique TLS secret name for your FQDN
+  ingress:
+    visibility: internal                  # internal or external
+  container:
+    image: my-registry/my-webapp:tag      # Web application image
+    port: 8080                            # Port your web app listens on
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed
+
 scheduler:
-  name: scheduler
-  path: /dask-dashboard
-  container: 
-    image: #DASK_IMAGE
-    imagePullPolicy: Always
-    dashboardPort: 8787
-    workerPort: 8786
-    memory: 1G
-    cpu: 2
+  name: scheduler                         # Name for scheduler k8s objects
+  path: /dask-dashboard                   # URL path for the Dask dashboard
+  container:
+    image: my-registry/my-dask:tag        # Dask image (used by scheduler and workers)
+    dashboardPort: 8787                   # Dask dashboard port
+    workerPort: 8786                      # Dask scheduler-worker communication port
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed
+
 worker:
-  name: dask-worker
-  replicaCount: #WORKER_COUNT
+  name: dask-worker                       # Name for worker k8s objects
+  replicaCount: 4                         # Number of Dask workers to run
+  container:
+    requests:
+      memory: 1G                          # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 2G                          # Maximum memory allowed
+      cpu: 4                              # Maximum CPU allowed

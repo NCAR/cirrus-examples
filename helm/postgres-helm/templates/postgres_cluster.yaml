@@ -11,27 +11,23 @@ spec:
   storage:
     size: {{ .Values.db.size }}
 
-  # Add TLS certificates for encrypted communication
   certificates:
     serverTLSSecret: {{ .Values.db.name }}-server-cert
     serverCASecret: {{ .Values.db.name }}-server-cert
 
-  # Allow outside hosts to connect to the database
   postgresql:
     pg_hba:
       - "host all all 0.0.0.0/0 md5"
 
-  # Enable superuser access
+  {{- if .Values.db.superUser.enabled }}
   enableSuperuserAccess: true
-  
-  # Configure postgres superuser from su_external_secret
+
   superuserSecret:
     name: "{{ .Values.db.name }}-superuser"
+  {{- end }}
 
-  # Create a standard user from user_external_secret
   bootstrap:
     initdb:
       database: {{ .Values.db.app.name }}
-      owner: {{ .Values.db.app.owner }}
       secret:
         name: "{{ .Values.db.name }}-app-user"

@@ -8,10 +8,10 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "incommon"
 spec:
-  ingressClassName: nginx-internal
+  ingressClassName: nginx-{{ .Values.webapp.ingress.visibility }}
   tls:
     - hosts:
-      - {{ .Values.webapp.tls.fqdn }}
+        - {{ .Values.webapp.tls.fqdn }}
       secretName: {{ .Values.webapp.tls.secretName }}
   rules:
   - host: {{ .Values.webapp.tls.fqdn }}

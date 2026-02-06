@@ -1,19 +1,26 @@
-replicaCount: 1
+replicaCount: 2                           # Number of identical pods to run
 
 webapp:
-  name: #APP_NAME
-  group: #APP_NAME
-  path: #URL_PATH
+  name: my-app                            # Name for k8s objects
+  group: my-app                           # Group label for related resources
+  path: /                                 # URL path suffix
   tls:
-    fqdn: #FQDN
-    secretName: incommon-cert-#APP_NAME
-  volume1:
-    name: #VOL1_NAME
-    server: #VOL1_SERVER
-    path: #VOL1_PATH
-    readOnly: true
-  container: 
-    image: #IMAGE_NAME
-    port: #CONTAINER_PORT
-    memory: 1G
-    cpu: 2
+    fqdn: my-app.k8s.ucar.edu             # Must be unique and end in .k8s.ucar.edu
+    secretName: incommon-cert-my-app      # Unique TLS secret name for your FQDN
+  ingress:
+    visibility: internal                  # internal or external
+  nfs:
+    name: glade-campaign                  # Unique name for the volume
+    server: nfs.example.ucar.edu          # NFS server FQDN or IP
+    path: /campaign                       # Export path on the NFS server
+    mountPath: /glade/campaign            # Path inside the container to mount to
+    readOnly: true                        # GLADE access is read-only
+  container:
+    image: my-registry/my-image:tag       # Full image path
+    port: 8080                            # Port your container listens on
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed

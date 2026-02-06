@@ -1,32 +1,75 @@
 # external-secret-helm
-A chart for deploying web applications with external secrets to the CISL cloud with Helm. This requires a secret to be stored in bao.k8s.ucar.edu so it can be injected in to the required container appropriately. 
 
-```{note}
-Information required to create a Helm chart for your web application:
-1. A Name for your application, this is not the URL that will be deployed but the name of the k8s objects created
-2. A URL path. This also is not the full URL, just the suffix you'd like to use after `.edu`. This is typically just `/` but may be things like `/api` that correspond to endpoints on your application.
-3. An FQDN. This is the full URL for your application. Currently in the CISL cloud environment we only can create names under the `.k8s.ucar.edu` domain and your FQDN should end with `.k8s.ucar.edu`. Please make sure this is unique, try to browse to it before applying, and descriptive for your application. 
-4. Container image to use. This should be an image that is already built and has been pushed to a container registry that the application can pull from. By default it is set to look at docker.io so if you are using something different you need to specify that before your container registry and image name:tag
-5. Container port to expose. Your containerized application will expose a port to the network in order to communicate. More often than not there is a default for the application you are using and you also have the ability to provide a specific port if you wanted. If you have run your container image locally it is usually in the URL you used to access it locally, ie. `http://127.0.0.1:8888` is running on port 8888 and would be the appropriate value to put in the Helm chart. 
-6. Secret information to inject in to the container. This should be stored in bao.k8s.ucar.edu. An example of what a path would look like is, <sso>/mywebapp. Under that path I could use the key myapp-pass to store a password securely.   
+A Helm chart for deploying a containerized application as a website on CIRRUS with secrets injected from [OpenBao](https://openbao.org/) (`bao.k8s.ucar.edu`) via ExternalSecrets. Secrets are mounted as environment variables inside the container.
+
+## Prerequisites
+
+Before deploying, you'll need the following information:
+
+| Parameter | Description |
+|-----------|-------------|
+| **Application name** | Name for your Kubernetes objects (not the URL) |
+| **FQDN** | Full URL for your app, must end in `.k8s.ucar.edu` and be unique |
+| **URL path** | The path suffix after your FQDN, typically `/` unless your app serves on a subpath like `/api` |
+| **Container image** | A pre-built image available in a container registry that CIRRUS can pull from |
+| **Container port** | The port your application listens on inside the container. If you run it locally at `http://127.0.0.1:8888`, the port is `8888` |
+| **Visibility** | Whether your application URL is accessible to the public (`external`) or only the UCAR network/VPN (`internal`) |
+| **Resource requirements** | How much memory and CPU your application needs. Set both guaranteed minimums (`requests`) and upper bounds (`limits`) |
+| **Secret path** | The path in `bao.k8s.ucar.edu` where your secret is stored |
+| **Secret key** | The key under that path to retrieve the secret value |
+
+### OpenBao Secret Setup
+
+Your secret must be stored in `bao.k8s.ucar.edu` before deploying. For example, if your path is `my-sso/mywebapp` with a key of `api-token`, the value stored at that key will be injected as an environment variable in your container.
+
+> **Note:** A `SecretStore` must be configured in your namespace to access OpenBao. Contact [cirrus-admin@ucar.edu](mailto:cirrus-admin@ucar.edu) to have this set up.
+
+## Configuration
+
+Update `values.yaml` with your application details:
+
+```yaml
+replicaCount: 2                           # Number of identical pods to run
+
+webapp:
+  name: my-app                            # Name for k8s objects
+  group: my-app                           # Group label for related resources
+  path: /                                 # URL path suffix
+  tls:
+    fqdn: my-app.k8s.ucar.edu            # Must be unique and end in .k8s.ucar.edu
+    secretName: incommon-cert-my-app      # Unique TLS secret name for your FQDN
+  ingress:
+    visibility: internal                  # internal or external
+  container:
+    image: my-registry/my-image:tag       # Full image path
+    port: 8080                            # Port your container listens on
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed
+  secret:
+    secretPath: my-sso/mywebapp           # Path in OpenBao where the secret is stored
+    secretKey: api-token                  # Key to retrieve from OpenBao
+    envVar: API_TOKEN                     # Environment variable name inside the container
 ```
 
-## Update values.yaml file
-In the `external-secret-helm/` directory is a file named `values.yaml` which contains all the specific details for your application. You need to update the following values to be unique for your deployment:
+> This example injects a single secret as an environment variable. To add more secrets, add additional entries to the `secret` section in `values.yaml` and corresponding `data` entries in the ExternalSecret and `env` entries in the Deployment templates.
 
-    - `#APP_NAME` : The name, and group name, to give your application.
-    - `#URL_PATH` : This is the URL suffix to route to. For most applications this will just be `/` unless your applications launches on a different default path
-    - `#FQDN` : ***This must end in .k8s.ucar.edu*** The fully Fully Qualified Domain Name to use for your application. This needs to be unique and has to live under the sub domain `*.k8s.ucar.edu`
-    - `secretName: incommon-cert-#HOST` : This is a secret that gets stored in kubernetes that contains the certificate for your application. This needs to be unique for the FQDN that is going to be in use as the SSL certificate and URL are coupled. 
-    - `#IMAGE_NAME` : This is the name and path to your image. By default Helm will look to Docker Hub. If you use something else please provide the full path to your image
-    - `#CONTAINER_PORT` : This is the network path that your container application opens and listens on. We need to map this to k8s in order to communicate in to your container. 
-    - `memory:` & `cpu:` is the amount of memory and cpus to allocate to your application. By default this is set low and it should be adjusted to fine tune your applications performance. 
-    - `#SECRET_PATH` : The path in bao.k8s.ucar.edu where the secret is stored.
-    - `#SECRET_KEY` : The key to query in bao.k8s.ucar.edu in order to get the secret value.
+## Non-web usage
 
-```{note}
-replicaCount: defines how many instances of your container you want to run. This is a static value that will run at all times and not a number that scales. Autoscaling is possible but requires additions to the Helm chart. 
-```
+This example deploys a full web application with a URL. If you only need an internal service with secrets, omit the `ingress.yaml` template and the `tls` and `ingress` sections from `values.yaml`. See [service-helm](../service-helm/) for a standalone service example.
 
-## Update Chart.yaml
-The Chart.yaml file is mostly used to describe your application and keep track of what versions you are on and running. 
+## Chart.yaml
+
+Update `Chart.yaml` with your application's name, description, and version information. This metadata is used by Helm to identify and track your chart.
+
+## Templates
+
+This chart creates the following Kubernetes resources:
+
+- **Deployment** — runs your container with the specified resource limits, replica count, and secret environment variables
+- **Service** — exposes your container port within the cluster
+- **Ingress** — configures external access via your FQDN with TLS termination using an InCommon certificate
+- **ExternalSecret** — pulls secret values from OpenBao and creates a Kubernetes secret

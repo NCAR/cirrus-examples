@@ -9,20 +9,18 @@ metadata:
     cert-manager.io/cluster-issuer: "incommon"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      rewrite ^(/dask-dashboard)$ $1/ redirect;
 spec:
-  ingressClassName: nginx-internal
+  ingressClassName: nginx-{{ .Values.webapp.ingress.visibility }}
   tls:
     - hosts:
-      - {{ .Values.webapp.tls.fqdn }}
+        - {{ .Values.webapp.tls.fqdn }}
       secretName: {{ .Values.webapp.tls.secretName }}
   rules:
   - host: {{ .Values.webapp.tls.fqdn }}
     http:
       paths:
       - path: {{ .Values.scheduler.path }}(/|$)(.*)
-        pathType: ImplementationSpecific 
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ .Values.scheduler.name }}

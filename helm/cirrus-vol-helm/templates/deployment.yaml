@@ -16,24 +16,40 @@ spec:
       labels:
         app: {{ .Values.webapp.name }}
     spec:
+      {{- if or .Values.webapp.volume.rdb.enabled .Values.webapp.volume.fs.enabled }}
       volumes:
+        {{- if .Values.webapp.volume.rdb.enabled }}
         - name: {{ .Values.webapp.volume.rdb.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.webapp.volume.rdb.name }}
+        {{- end }}
+        {{- if .Values.webapp.volume.fs.enabled }}
         - name: {{ .Values.webapp.volume.fs.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.webapp.volume.fs.name }}
+        {{- end }}
+      {{- end }}
       containers:
       - name: {{ .Values.webapp.name }}
         image: {{ .Values.webapp.container.image }}
+        imagePullPolicy: IfNotPresent
         resources:
+          requests:
+            memory: {{ .Values.webapp.container.requests.memory }}
+            cpu: {{ .Values.webapp.container.requests.cpu }}
           limits:
-            memory: {{ .Values.webapp.container.memory }}
-            cpu: {{ .Values.webapp.container.cpu }}
+            memory: {{ .Values.webapp.container.limits.memory }}
+            cpu: {{ .Values.webapp.container.limits.cpu }}
         ports:
         - containerPort: {{ .Values.webapp.container.port }}
+        {{- if or .Values.webapp.volume.rdb.enabled .Values.webapp.volume.fs.enabled }}
         volumeMounts:
-        - mountPath: {{ .Values.webapp.volume.rdb.mountPath }}
-          name: {{ .Values.webapp.volume.rdb.name }}
-        - mountPath: {{ .Values.webapp.volume.fs.mountPath }}
-          name: {{ .Values.webapp.volume.fs.name }}
+        {{- if .Values.webapp.volume.rdb.enabled }}
+        - name: {{ .Values.webapp.volume.rdb.name }}
+          mountPath: {{ .Values.webapp.volume.rdb.mountPath }}
+        {{- end }}
+        {{- if .Values.webapp.volume.fs.enabled }}
+        - name: {{ .Values.webapp.volume.fs.name }}
+          mountPath: {{ .Values.webapp.volume.fs.mountPath }}
+        {{- end }}
+        {{- end }}

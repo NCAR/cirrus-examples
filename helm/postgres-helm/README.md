@@ -1,28 +1,69 @@
 # postgres-helm
-A chart for deploying a PostgreSQL database cluster to the CISL cloud with Helm. This requires a superuser and regular user username and password to access the PostgreSQL database to be stored in bao.k8s.ucar.edu so it can be injected in to the required containers appropriately. 
 
-```{note}
-Information required to create a Helm chart for your web application:
-1. A Name for the database. This will be used as a hostname to connect to via <db_name>.k8s.ucar.edu
-2. The number of PostgreSQL servers to run in the database cluster
-3. The size of the volume to mount to the database and a unique name for the volume. 
-4. Secret information to access the database. This should be stored in bao.k8s.ucar.edu. An example of what a path would look like is, <email>/database01. Under that path use the keys postgresuser and postgrespass to store the username and password for the DB securely.   
+A Helm chart for deploying a [CloudNativePG](https://cloudnative-pg.io/) database cluster on CIRRUS. Database credentials are stored in [OpenBao](https://openbao.org/) (`bao.k8s.ucar.edu`) and injected via ExternalSecrets.
+
+## Prerequisites
+
+Before deploying, you'll need the following:
+
+| Parameter | Description |
+|-----------|-------------|
+| **Database name** | Name for your database cluster. This is also used as the hostname: `<name>.k8s.ucar.edu` |
+| **Instances** | Number of PostgreSQL servers in the cluster. We recommend 2+ for high availability |
+| **Storage size** | Disk space for the database (e.g., `10Gi`) |
+| **Application database name** | Name of the database to create during bootstrap |
+| **Secrets in OpenBao** | Superuser and application user credentials stored in `bao.k8s.ucar.edu` (see below) |
+
+### OpenBao Secret Setup
+
+Both the superuser and application user credentials must be stored in `bao.k8s.ucar.edu` before deploying. Each secret path should contain key-value pairs for the username and password.
+
+Example structure:
+```
+<your-path>/superuser
+  ├── username: postgres
+  └── password: <secure-password>
+
+<your-path>/appuser
+  ├── username: myappuser
+  └── password: <secure-password>
 ```
 
-## Update values.yaml file
-In the `postgres-helm/` directory is a file named `values.yaml` which contains all the specific details for your application. You need to update the following values to be unique for your deployment:
+> **Note:** A `SecretStore` must be configured in your namespace to access OpenBao. Contact [cirrus-admin@ucar.edu](mailto:cirrus-admin@ucar.edu) to have this set up.
 
-    - `#DATABASE_NAME` : The name of the database.
-    - `#DATABASE_APP_GROUP` : The group of applications to run the database with. If it's a standalone DB this can just be the DB name. 
-    - `#DATABASE_CLUSTER_MEMBERS` : The number of PostgreSQL database servers running for the cluster
-    - `#DATABASE_SIZE` : How large to make the database in Gi. 
-    - `#SU_USERNAME_SECRET_KEY` : The superuser username key as designated in bao.k8s.ucar.edu.
-    - `#SU_PASSWORD_SECRET_KEY` : The superuser password key as designated in bao.k8s.ucar.edu. 
-    - `#SU_SECRET_PATH` : The superuser secret path designated in bao.k8s.ucar.edu. 
-    - `#APP_USERNAME_SECRET_KEY` : The database username key to query in bao.k8s.ucar.edu in order to get the username value.
-    - `#APP_PASSWORD_SECRET_KEY` : The database password key to query in bao.k8s.ucar.edu in order to get the password value.
-    - `#APP_USER_SECRET_PATH` : The path in bao.k8s.ucar.edu where the DB secrets are stored.
+## Configuration
 
+Update `values.yaml` with your database details:
 
-## Update Chart.yaml
-The Chart.yaml file is mostly used to describe your application and keep track of what versions you are on and running. 
+```yaml
+db:
+  name: my-database                       # Database cluster name, also used as hostname
+  group: my-database                      # Group label for related resources
+  instances: 2                            # Number of PostgreSQL servers in the cluster
+  size: 10Gi                              # Storage size for the database
+  superUser:
+    enabled: false                         # Enable superuser access to the database
+    usernameKey: username                  # Key in OpenBao for superuser username
+    passwordKey: password                  # Key in OpenBao for superuser password
+    secretPath: my-path/superuser          # Path in OpenBao where superuser credentials are stored
+  app:
+    name: my-app-db                       # Database name to create during bootstrap
+    usernameKey: username                  # Key in OpenBao for app user username
+    passwordKey: password                  # Key in OpenBao for app user password
+    secretPath: my-path/appuser            # Path in OpenBao where app user credentials are stored
+```
+
+## Chart.yaml
+
+Update `Chart.yaml` with your application's name, description, and version information. This metadata is used by Helm to identify and track your chart.
+
+## Templates
+
+This chart creates the following Kubernetes resources:
+
+- **Cluster** — CloudNativePG cluster with the specified number of instances and storage
+- **Service (LoadBalancer)** — exposes the primary database instance at `<name>.k8s.ucar.edu:5432` via an internal load balancer with DNS managed by external-dns
+- **Certificate** — self-signed TLS certificate for encrypted database connections, covering all CloudNativePG service endpoints
+- **Issuer** — cert-manager self-signed issuer for the TLS certificate
+- **ExternalSecret (superuser)** — pulls superuser credentials from OpenBao
+- **ExternalSecret (app user)** — pulls application user credentials from OpenBao

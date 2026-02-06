@@ -1,17 +1,24 @@
-replicaCount: 1
+replicaCount: 2                           # Number of identical pods to run
 
 webapp:
-  name: #APP_NAME
-  group: #APP_NAME
-  path: #URL_PATH
+  name: my-app                            # Name for k8s objects
+  group: my-app                           # Group label for related resources
+  path: /                                 # URL path suffix
   tls:
-    fqdn: #FQDN
-    secretName: incommon-cert-#HOST
-  container: 
-    image: #IMAGE_NAME
-    port: #CONTAINER_PORT
-    memory: 1G
-    cpu: 2
+    fqdn: my-app.k8s.ucar.edu            # Must be unique and end in .k8s.ucar.edu
+    secretName: incommon-cert-my-app      # Unique TLS secret name for your FQDN
+  ingress:
+    visibility: internal                  # internal or external
+  container:
+    image: my-registry/my-image:tag       # Full image path
+    port: 8080                            # Port your container listens on
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed
   secret:
-    secretPath: #SECRET_PATH
-    secretKey: #SECRET_KEY
+    secretPath: my-sso/mywebapp           # Path in OpenBao where the secret is stored
+    secretKey: api-token                  # Key to retrieve from OpenBao
+    envVar: API_TOKEN                     # Environment variable name inside the container
