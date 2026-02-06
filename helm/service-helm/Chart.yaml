@@ -1,5 +1,5 @@
 apiVersion: v2
-name: my-service                         # Name of this Helm chart
+name: cirrus-service                         # Name of this Helm chart
 description: A Helm chart for deploying an internal service to CIRRUS
 type: application                        # Application chart (not a library)
 version: 0.1.0                           # Chart version, increment when you change templates

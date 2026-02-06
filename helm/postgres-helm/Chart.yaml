@@ -1,5 +1,5 @@
 apiVersion: v2
-name: my-database                         # Name of this Helm chart
+name: cirrus-cnpg                         # Name of this Helm chart
 description: A Helm chart for deploying a CloudNativePG database cluster to CIRRUS
 type: application                         # Application chart (not a library)
 version: 0.1.0                            # Chart version, increment when you change templates

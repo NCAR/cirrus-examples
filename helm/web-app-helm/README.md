@@ -33,10 +33,14 @@ webapp:
   ingress:
     visibility: internal                # internal or external
   container:
-    image: my-registry/my-image:tag     # Full image path if not on Docker Hub
-    port: 8080                          # Port your container listens on
-    memory: 1G                          # Memory limit
-    cpu: 2                              # CPU limit
+    image: my-registry/my-image:tag       # Full image path if not on Docker Hub
+    port: 8080                            # Port your container listens on
+    requests:
+      memory: 512M                        # Guaranteed memory allocation
+      cpu: 1                              # Guaranteed CPU allocation
+    limits:
+      memory: 1G                          # Maximum memory allowed
+      cpu: 2                              # Maximum CPU allowed
 ```
 
 > `replicaCount` defines how many identical copies (pods) of your container to run. This is a static value — autoscaling requires additional chart components. We recommend 2+ for zero-downtime deployments during server maintenance.
