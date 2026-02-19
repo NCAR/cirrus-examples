@@ -1,0 +1,5 @@
+appName: my-application
+namespace: my-namespace
+
+alerting:
+  email: team@ucar.edu

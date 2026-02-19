@@ -1,0 +1,45 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Values.appName }}-alerts
+  namespace: {{ .Values.namespace }}
+  labels:
+    prometheus: {{ .Values.appName }}
+    role: alert-rules
+spec:
+  groups:
+    - name: {{ .Values.appName }}.rules
+      interval: 30s
+      rules:
+        - alert: PodDown
+          expr: up{namespace="{{ .Values.namespace }}"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            namespace: {{ .Values.namespace }}
+          annotations:
+            summary: "Pod is down in {{ .Values.namespace }}"
+            description: "Pod {{ "{{ $labels.pod }}" }} in namespace {{ .Values.namespace }} has been down for more than 5 minutes."
+
+        - alert: HighMemoryUsage
+          expr: |
+            container_memory_usage_bytes{namespace="{{ .Values.namespace }}"} 
+            / container_spec_memory_limit_bytes{namespace="{{ .Values.namespace }}"} > 0.9
+          for: 10m
+          labels:
+            severity: warning
+            namespace: {{ .Values.namespace }}
+          annotations:
+            summary: "High memory usage detected"
+            description: "Container {{ "{{ $labels.container }}" }} is using more than 90% of its memory limit."
+
+        - alert: HighCPUUsage
+          expr: |
+            rate(container_cpu_usage_seconds_total{namespace="{{ .Values.namespace }}"}[5m]) > 0.8
+          for: 10m
+          labels:
+            severity: warning
+            namespace: {{ .Values.namespace }}
+          annotations:
+            summary: "High CPU usage detected"
+            description: "Container {{ "{{ $labels.container }}" }} CPU usage is above 80%."

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cirrus-alerts                       # Name of this Helm chart
+description: A Helm chart for deploying alerts to CIRRUS
+type: application                         # Application chart (not a library)
+version: 0.1.0                            # Chart version, increment when you change templates
+appVersion: "1.0.0"                       # Your application version, increment when you update your image

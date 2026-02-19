@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: {{ .Values.appName }}-alerting
+  namespace: {{ .Values.namespace }}
+  labels:
+    alertmanagerConfig: {{ .Values.appName }}
+    namespace: {{ .Values.namespace }}
+spec:
+  route:
+    receiver: {{ .Values.appName }}-notifications
+    groupBy:
+      - alertname
+    groupWait: 10s
+    groupInterval: 1m
+    repeatInterval: 60m 
+    matchers:
+      - name: namespace
+        value: {{ .Values.namespace }}
+        matchType: "="
+
+  receivers:
+    - name: {{ .Values.appName }}-notifications
+      emailConfigs:
+        - to: {{ .Values.alerting.email }}
+          from: alertmanager@k8s.ucar.edu
+          smarthost: vdir.ucar.edu:25
