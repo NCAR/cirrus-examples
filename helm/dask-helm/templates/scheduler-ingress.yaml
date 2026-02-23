@@ -10,7 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  ingressClassName: nginx-{{ .Values.webapp.ingress.visibility }}
+  ingressClassName: traefik-{{ .Values.webapp.ingress.visibility }}
   tls:
     - hosts:
         - {{ .Values.webapp.tls.fqdn }}
