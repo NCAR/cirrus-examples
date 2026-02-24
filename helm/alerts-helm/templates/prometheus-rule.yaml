@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     prometheus: {{ .Values.appName }}
-    role: alert-rules
+    release: kube-prometheus-stack 
 spec:
   groups:
     - name: {{ .Values.appName }}.rules
@@ -20,7 +20,7 @@ spec:
             team: {{ .Values.appName }}-notifications
           annotations:
             summary: "Pod is down in {{ .Values.namespace }}"
-            description: "Pod {{ "{{ $labels.pod }}" }} in namespace {{ .Values.namespace }} has been down for more than 5 minutes."
+            description: "Pod {{`{{ $labels.pod }}`}} in namespace {{ .Values.namespace }} has been down for more than 5 minutes."
 
         - alert: HighMemoryUsage
           expr: |
@@ -33,7 +33,7 @@ spec:
             team: {{ .Values.appName }}-notifications
           annotations:
             summary: "High memory usage detected"
-            description: "Container {{ "{{ $labels.container }}" }} is using more than 90% of its memory limit."
+            description: "Container {{`{{ $labels.container }}`}} is using more than 90% of its memory limit."
 
         - alert: HighCPUUsage
           expr: |
@@ -45,4 +45,15 @@ spec:
             team: {{ .Values.appName }}-notifications
           annotations:
             summary: "High CPU usage detected"
-            description: "Container {{ "{{ $labels.container }}" }} CPU usage is above 80%."
+            description: "Container {{`{{ $labels.container }}`}} CPU usage is above 80%."
+
+        - alert: TestAlert
+          expr: vector(1)
+          for: 1m
+          labels:
+            severity: warning
+            namespace: {{ .Values.namespace }}
+            team: {{ .Values.appName }}-notifications
+          annotations:
+            summary: "Test alert - always firing"
+            description: "This is a test alert to verify your alerting pipeline works. Remove this rule once confirmed."

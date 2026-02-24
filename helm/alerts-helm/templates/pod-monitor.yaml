@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.appName }}
+    release: kube-prometheus-stack
 spec:
   selector:
     matchLabels:

@@ -6,6 +6,7 @@ metadata:
   labels:
     alertmanagerConfig: {{ .Values.appName }}
     namespace: {{ .Values.namespace }}
+    release: kube-prometheus-stack 
 spec:
   route:
     receiver: {{ .Values.appName }}-notifications
