@@ -5,8 +5,7 @@ db:
   size: 10Gi                              # Storage size for the database
   superUser:
     enabled: false                         # Enable superuser access to the database
-    usernameKey: username                  # Key in OpenBao for superuser username
-    passwordKey: password                  # Key in OpenBao for superuser password
+    passwordKey: password                  # Key in OpenBao for superuser password (username is always "postgres")
     secretPath: my-path/superuser          # Path in OpenBao where superuser credentials are stored
   app:
     name: my-app-db                       # Database name to create during bootstrap
