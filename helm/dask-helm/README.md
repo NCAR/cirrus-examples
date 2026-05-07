@@ -50,6 +50,8 @@ available in the cluster, you do not need to create them:
 | `traefik-default-timeouts@kubernetescrd` | Applies standard timeout settings |
 | `traefik-scheduler-rewrite@kubernetescrd` | Rewrites the `/dask-dashboard` path prefix |
 
+For additional middleware configuration options and advanced routing patterns, see the official [Traefik Middleware documentation](https://doc.traefik.io/traefik/middlewares/overview/).
+
 **New deployment?** You're all set — ingress is pre-configured. See
 `templates/scheduler-ingress.yaml` as a reference.
 
