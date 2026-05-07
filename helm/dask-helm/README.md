@@ -38,34 +38,38 @@ The Dask dashboard is accessible at the scheduler service on port `8787` and is 
 
 This chart can also be used without the web application to run a standalone Dask cluster as a service. Remove the `webapp_deployment.yaml`, `ingress.yaml`, and `webapp_service.yaml` templates, and the `webapp` section from `values.yaml`. Other applications in the cluster can connect to the scheduler service directly.
 
-
 ## Ingress Configuration
 
-### Traefik Migration (nginx → Traefik)
-
-This chart has been migrated from nginx to **Traefik** as the ingress controller.
-The scheduler and webapp ingress templates use Traefik-native annotations.
-
-If you are adapting an older chart, replace nginx annotations with the Traefik equivalents:
-
-| Old (nginx) | New (Traefik) |
-|---|---|
-| `nginx.ingress.kubernetes.io/use-regex: "true"` | Handled by `traefik-scheduler-rewrite` middleware |
-| `nginx.ingress.kubernetes.io/rewrite-target: /$2` | Handled by `traefik-scheduler-rewrite` middleware |
-
-The following Traefik middlewares are required in the cluster and referenced
-by the scheduler ingress:
+This chart uses **Traefik** as the ingress controller. The following middlewares
+are cluster-wide CRDs managed by the CIRRUS platform team — they are already
+available in the cluster, you do not need to create them:
 
 | Middleware | Purpose |
 |---|---|
 | `traefik-redirect-https@kubernetescrd` | Forces HTTP → HTTPS redirect |
 | `traefik-default-timeouts@kubernetescrd` | Applies standard timeout settings |
-| `traefik-scheduler-rewrite@kubernetescrd` | Rewrites the `/dask-dashboard` path for the scheduler |
+| `traefik-scheduler-rewrite@kubernetescrd` | Rewrites the `/dask-dashboard` path prefix |
 
-> These middlewares are cluster-wide CRDs managed by the CIRRUS platform team.
-> You do not need to create them — just ensure your `ingressClassName` is set to `traefik-internal` or `traefik-external` in `values.yaml`.
+**New deployment?** You're all set — ingress is pre-configured. See
+`templates/scheduler-ingress.yaml` as a reference.
 
+**Migrating from nginx?** Replace your annotations block:
 
+```yaml
+# BEFORE (nginx)
+annotations:
+  cert-manager.io/cluster-issuer: "incommon"
+  nginx.ingress.kubernetes.io/use-regex: "true"
+  nginx.ingress.kubernetes.io/rewrite-target: /$2
+
+# AFTER (Traefik)
+annotations:
+  cert-manager.io/cluster-issuer: "incommon"
+  traefik.ingress.kubernetes.io/router.middlewares: |
+    traefik-redirect-https@kubernetescrd,
+    traefik-default-timeouts@kubernetescrd,
+    traefik-scheduler-rewrite@kubernetescrd
+```
 
 ## Configuration
 
