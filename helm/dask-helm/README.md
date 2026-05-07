@@ -38,6 +38,35 @@ The Dask dashboard is accessible at the scheduler service on port `8787` and is 
 
 This chart can also be used without the web application to run a standalone Dask cluster as a service. Remove the `webapp_deployment.yaml`, `ingress.yaml`, and `webapp_service.yaml` templates, and the `webapp` section from `values.yaml`. Other applications in the cluster can connect to the scheduler service directly.
 
+
+## Ingress Configuration
+
+### Traefik Migration (nginx → Traefik)
+
+This chart has been migrated from nginx to **Traefik** as the ingress controller.
+The scheduler and webapp ingress templates use Traefik-native annotations.
+
+If you are adapting an older chart, replace nginx annotations with the Traefik equivalents:
+
+| Old (nginx) | New (Traefik) |
+|---|---|
+| `nginx.ingress.kubernetes.io/use-regex: "true"` | Handled by `traefik-scheduler-rewrite` middleware |
+| `nginx.ingress.kubernetes.io/rewrite-target: /$2` | Handled by `traefik-scheduler-rewrite` middleware |
+
+The following Traefik middlewares are required in the cluster and referenced
+by the scheduler ingress:
+
+| Middleware | Purpose |
+|---|---|
+| `traefik-redirect-https@kubernetescrd` | Forces HTTP → HTTPS redirect |
+| `traefik-default-timeouts@kubernetescrd` | Applies standard timeout settings |
+| `traefik-scheduler-rewrite@kubernetescrd` | Rewrites the `/dask-dashboard` path for the scheduler |
+
+> These middlewares are cluster-wide CRDs managed by the CIRRUS platform team.
+> You do not need to create them — just ensure your `ingressClassName` is set to `traefik-internal` or `traefik-external` in `values.yaml`.
+
+
+
 ## Configuration
 
 Update `values.yaml` with your application details:
@@ -105,4 +134,4 @@ This chart creates the following Kubernetes resources:
 - **Service (web app)** — exposes your web app port within the cluster
 - **Service (scheduler)** — exposes the scheduler ports for worker communication and the dashboard
 - **Ingress (web app)** — configures external access to the web app via your FQDN with TLS termination using an InCommon certificate
-- **Ingress (scheduler)** — exposes the Dask dashboard at your FQDN under the `/dask-dashboard` path with regex rewriting
+- **Ingress (scheduler)** — exposes the Dask dashboard at your FQDN under the `/dask-dashboard` path via Traefik middleware path rewriting
