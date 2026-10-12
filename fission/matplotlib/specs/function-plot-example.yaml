@@ -1,0 +1,52 @@
+include:
+- sm.py
+kind: ArchiveUploadSpec
+name: sm-py-a1De
+
+---
+apiVersion: fission.io/v1
+kind: Package
+metadata:
+  name: plot-example-318b4959-43af-4003-8279-5fb663a8702b
+spec:
+  deployment:
+    checksum: {}
+  environment:
+    name: plt-example
+    namespace: ""
+  source:
+    checksum: {}
+    type: url
+    url: archive://sm-py-a1De
+status:
+  buildstatus: pending
+  lastUpdateTimestamp: "2026-10-09T19:25:33Z"
+
+---
+apiVersion: fission.io/v1
+kind: Function
+metadata:
+  name: plot-example
+spec:
+  InvokeStrategy:
+    ExecutionStrategy:
+      ExecutorType: poolmgr
+      MaxScale: 0
+      MinScale: 0
+      SpecializationTimeout: 120
+      TargetCPUPercent: 0
+    StrategyType: execution
+  concurrency: 500
+  environment:
+    name: plt-example
+    namespace: ""
+  functionTimeout: 60
+  idletimeout: 120
+  package:
+    functionName: sm.plot_cygnss_sm
+    packageref:
+      name: plot-example-318b4959-43af-4003-8279-5fb663a8702b
+      namespace: ""
+  requestsPerPod: 1
+  resources: {}
+status: {}
