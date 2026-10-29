@@ -13,21 +13,30 @@ Helm charts are packages that define Kubernetes applications. They contain templ
 ## Examples
 
 ### Getting Started
-- **[web-app-helm](./web-app-helm/)** - Deploy a containerized application as a website with a URL accessible internally or externally
-- **[service-helm](./service-helm/)** - Deploy a containerized application as an internal cluster service without external access
+- **[web-app-helm](./helm/web-app-helm/)** - Deploy a containerized application as a website with a URL accessible internally or externally
+- **[service-helm](./helm/service-helm/)** - Deploy a containerized application as an internal cluster service without external access
 
 ### Storage
-- **[cirrus-vol-helm](./cirrus-vol-helm/)** - Web application with persistent Ceph storage volumes (RBD for single-pod or CephFS for multi-pod access)
-- **[nfs-vol-helm](./nfs-vol-helm/)** - Web application with NFS volume mounts (e.g., read-only access to GLADE)
+- **[cirrus-vol-helm](./helm/cirrus-vol-helm/)** - Web application with persistent Ceph storage volumes (RBD for single-pod or CephFS for multi-pod access)
+- **[nfs-vol-helm](./helm/nfs-vol-helm/)** - Web application with NFS volume mounts (e.g., read-only access to GLADE)
 
 ### Databases
-- **[postgres-helm](./postgres-helm/)** - CloudNativePG database cluster with TLS certificates, load balancer service, and credentials managed via OpenBao external secrets
+- **[postgres-helm](./helm/postgres-helm/)** - CloudNativePG database cluster with TLS certificates, load balancer service, and credentials managed via OpenBao external secrets
 
 ### Compute Workloads
-- **[dask-helm](./dask-helm/)** - Dedicated Dask distributed computing cluster (scheduler + workers) alongside a web application
+- **[dask-helm](./helm/dask-helm/)** - Dedicated Dask distributed computing cluster (scheduler + workers) alongside a web application
 
 ### Security
-- **[external-secret-helm](./external-secret-helm/)** - Web application with secrets injected from OpenBao (`bao.k8s.ucar.edu`) as environment variables
+- **[external-secret-helm](./helm/external-secret-helm/)** - Web application with secrets injected from OpenBao (`bao.k8s.ucar.edu`) as environment variables
+
+### Monitoring
+- **[alerts-helm](./helm/alerts-helm/)** - Add Pod and Service monitors to workloads and configure rules and alerting configuration
+
+### Functions as a Service
+- **[fission](./fission/)** - Deploy functions as a service that are available in multiple programming languages that can be called remotely utilizing CIRRUS resources
+
+### GitHub Actions 
+- **[github-workflows](./github-workflows/)** - Run automated workflows on CIRRUS through GitHub when your codebase changes 
 
 ## Helm Chart Structure
 
